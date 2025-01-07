@@ -61,11 +61,14 @@ if os.getenv("DATABASE_URL"):
     DATABASE_URL = os.getenv("DATABASE_URL")
     parsed = urlparse(DATABASE_URL)
 
-    if parsed.scheme != "mysql":
-        raise ValueError("For DATABASE_URL, only mysql is supported.")
+    
+    if parsed.scheme != "mysql" and parsed.scheme != "postgres":
+        raise ValueError("For DATABASE_URL, only mysql or postgresql is supported.")
+
+    engine = "django.db.backends.mysql" if parsed.scheme == "mysql" else "django.db.backends.postgresql"
 
     DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': engine,
         'NAME': parsed.path.lstrip('/'),
         "USER": parsed.username,
         "PASSWORD": parsed.password,
